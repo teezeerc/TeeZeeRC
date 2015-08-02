@@ -12,11 +12,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<platform.version>5.1.1_r2</platform.version>
 		<android.plugin.version>3.8.2</android.plugin.version>
-		<robospice.version>1.4.13</robospice.version>
 		<android.support.version>22.2.0</android.support.version>
 		<sdk.platform.version>22</sdk.platform.version>
 		<lifecycle-mapping-plugin.version>1.0.0</lifecycle-mapping-plugin.version>
-		<commons.logging.version>1.1.3</commons.logging.version>
 		<android-maven-plugin.version>3.7.0</android-maven-plugin.version>
 	</properties>
 
