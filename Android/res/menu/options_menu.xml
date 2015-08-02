@@ -1,0 +1,6 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/settings_option_item_mode_1"
+          android:title="@string/mode_1_name" />
+    <item android:id="@+id/settings_option_item_mode_2"
+          android:title="@string/mode_2_name" />
+  </menu>
