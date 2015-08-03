@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Map;
 
 import android.content.Context;
@@ -42,28 +43,23 @@ public class SendPacketAsyncTask extends
 		this.context = context;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
 	/**
 	 * Method responsible for sending UDP packets to RX and for updating WiFi state information
 	 * 
 	 */
+	@SuppressWarnings("unchecked")
+	@Override
 	protected String doInBackground(Map<Integer, Integer>... params) {
-
 		Log.d("map", "task started");
 		try {
 			DatagramSocket datagramSocket = new DatagramSocket();
 			while (!isCancelled()) {
-				String result = checkWifi();
-				publishProgress(result);
+				publishProgress(getWiFiStatus());
 				// printMap(params[0]);
 				try {
 					byte[] packet = constructPacket(params[0]);
 					printPacket(packet);
-					InetAddress address = InetAddress.getByName(ipAddress);
-					DatagramPacket udppacket = new DatagramPacket(packet,
-							packet.length, address, port);
-					datagramSocket.send(udppacket);
+					sendUDPPacket(datagramSocket, packet);
 					Thread.sleep(100);
 				} catch (InterruptedException | IOException e) {
 					Log.e("task", "exception", e);
@@ -75,6 +71,14 @@ public class SendPacketAsyncTask extends
 			Log.e("task", "exception", e);
 		}
 		return null;
+	}
+
+	private void sendUDPPacket(DatagramSocket datagramSocket, byte[] packet)
+			throws UnknownHostException, IOException {
+		InetAddress address = InetAddress.getByName(ipAddress);
+		DatagramPacket udppacket = new DatagramPacket(packet,
+				packet.length, address, port);
+		datagramSocket.send(udppacket);
 	}
 
 	@Override
@@ -89,37 +93,44 @@ public class SendPacketAsyncTask extends
 	 * Method checks state of WiFi connection and if it detects low signal level
 	 * - vibration is introduced
 	 * 
-	 * @return
+	 * @return String with WiFi state description
 	 */
-	private String checkWifi() {
+	private String getWiFiStatus() {
 		String result = "";
 		ConnectivityManager cm = (ConnectivityManager) getContext()
 				.getApplicationContext().getSystemService(
 						Context.CONNECTIVITY_SERVICE);
 		NetworkInfo Info = cm.getActiveNetworkInfo();
-		if (Info == null || !Info.isConnectedOrConnecting()) {
-			Log.d("WIFI CONNECTION", "No connection");
+		if (isWiFiConnected(Info)) {
 			result = "No connection!";
+			Log.d("WIFI CONNECTION", "No connection");
 		} else {
-			int netType = Info.getType();
-			if (netType == ConnectivityManager.TYPE_WIFI) {
+			if (Info.getType() == ConnectivityManager.TYPE_WIFI) {
 				WifiManager wifiManager = (WifiManager) getContext()
 						.getApplicationContext().getSystemService(
 								Context.WIFI_SERVICE);
 				int linkSpeed = wifiManager.getConnectionInfo().getLinkSpeed();
 				int rssi = wifiManager.getConnectionInfo().getRssi();
 				int wifiLevel = WifiManager.calculateSignalLevel(rssi, 100);
-				if (wifiLevel < 20) {
-					Vibrator v = (Vibrator) getContext().getSystemService(
-							Context.VIBRATOR_SERVICE);
-					v.vibrate(500);
-				}
+				vibrateIfLowSignalLevel(wifiLevel);
+				result = "Speed: " + linkSpeed + " wifilevel:" + wifiLevel;
 				Log.d("WIFI CONNECTION", "Wifi connection speed: " + linkSpeed
 						+ " rssi: " + rssi + " wifilevel:" + wifiLevel);
-				result = "Speed: " + linkSpeed + " wifilevel:" + wifiLevel;
 			}
 		}
 		return result;
+	}
+
+	private boolean isWiFiConnected(NetworkInfo Info) {
+		return !(Info == null || !Info.isConnectedOrConnecting());
+	}
+
+	private void vibrateIfLowSignalLevel(int wifiLevel) {
+		if (wifiLevel < 20) {
+			Vibrator v = (Vibrator) getContext().getSystemService(
+					Context.VIBRATOR_SERVICE);
+			v.vibrate(500);
+		}
 	}
 
 	public String getAddress() {
