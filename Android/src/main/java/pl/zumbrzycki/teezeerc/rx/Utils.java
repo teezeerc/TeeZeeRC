@@ -23,13 +23,9 @@ import android.util.Log;
 public class Utils {
 
 	public static boolean isPointInRectangle(PointF point, Rect rect) {
-		if (point != null
+		return (point != null
 				&& (point.x >= rect.left && point.x <= rect.right
-						&& point.y >= rect.top && point.y <= rect.bottom)) {
-			return true;
-		} else {
-			return false;
-		}
+						&& point.y >= rect.top && point.y <= rect.bottom));
 	}
 
 	public static int getLeftColorByMode(int mode) {
@@ -71,7 +67,7 @@ public class Utils {
 		}
 	}
 
-	public static int map(float value, float minActualInterval,
+	public static int mapValueToRange(float value, float minActualInterval,
 			float maxActualInterval, float minDesiredInterval,
 			float maxDesiredInterval) {
 

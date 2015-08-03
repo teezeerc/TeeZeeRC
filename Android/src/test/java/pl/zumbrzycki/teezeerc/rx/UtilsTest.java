@@ -9,11 +9,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * @author Tomasz Zumbrzycki Tests for utils
  * 
  */
+@RunWith(PowerMockRunner.class)
 public class UtilsTest {
 
 	@Test
@@ -78,7 +82,7 @@ public class UtilsTest {
 		// given
 		float value = 5;
 		// when
-		float result = Utils.map(value, 0, 10, 5, 15);
+		float result = Utils.mapValueToRange(value, 0, 10, 5, 15);
 		// then
 		assertThat(result).isEqualTo(10);
 	}
@@ -88,7 +92,7 @@ public class UtilsTest {
 		// given
 		float value = 508;
 		// when
-		float result = Utils.map(value, 1, 1016, 0, 254);
+		float result = Utils.mapValueToRange(value, 1, 1016, 0, 254);
 		// then
 		assertThat(result).isEqualTo(127);
 	}

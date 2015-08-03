@@ -30,8 +30,8 @@ import android.widget.TextView;
 public class SendPacketAsyncTask extends
 		AsyncTask<Map<Integer, Integer>, String, String> {
 
-	private String ipAddress = "192.168.1.140";
-	private int port = 8080;
+	private String ipAddress;
+	private int port;
 	private Context context;
 	private TextView view;
 
@@ -64,7 +64,6 @@ public class SendPacketAsyncTask extends
 					DatagramPacket udppacket = new DatagramPacket(packet,
 							packet.length, address, port);
 					datagramSocket.send(udppacket);
-
 					Thread.sleep(100);
 				} catch (InterruptedException | IOException e) {
 					Log.e("task", "exception", e);

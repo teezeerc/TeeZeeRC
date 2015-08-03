@@ -8,7 +8,7 @@ import static pl.zumbrzycki.teezeerc.rx.Utils.getDefaultRightPointByMode;
 import static pl.zumbrzycki.teezeerc.rx.Utils.getLeftColorByMode;
 import static pl.zumbrzycki.teezeerc.rx.Utils.getRightColorByMode;
 import static pl.zumbrzycki.teezeerc.rx.Utils.isPointInRectangle;
-import static pl.zumbrzycki.teezeerc.rx.Utils.map;
+import static pl.zumbrzycki.teezeerc.rx.Utils.mapValueToRange;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -103,47 +103,47 @@ public class MultitouchView extends View {
 			left = pointers.get(0);
 			right = pointers.get(1);
 			if (!reverse[0]) {
-				channels.put(1, map(right.x, LEFT_2, RIGHT_2, 0, 254));
+				channels.put(1, mapValueToRange(right.x, LEFT_2, RIGHT_2, 0, 254));
 			} else {
-				channels.put(1, map(right.x, RIGHT_2, LEFT_2, 0, 254));
+				channels.put(1, mapValueToRange(right.x, RIGHT_2, LEFT_2, 0, 254));
 			}
 			if (!reverse[1]) {
-				channels.put(2, map(right.y, BOTTOM_2, TOP_2, 0, 254));
+				channels.put(2, mapValueToRange(right.y, BOTTOM_2, TOP_2, 0, 254));
 			} else {
-				channels.put(2, map(right.y, TOP_2, BOTTOM_2, 0, 254));
+				channels.put(2, mapValueToRange(right.y, TOP_2, BOTTOM_2, 0, 254));
 			}
 			if (!reverse[2]) {
-				channels.put(3, map(left.y, BOTTOM_1, TOP_1, 0, 254));
+				channels.put(3, mapValueToRange(left.y, BOTTOM_1, TOP_1, 0, 254));
 			} else {
-				channels.put(3, map(left.y, TOP_1, BOTTOM_1, 0, 254));
+				channels.put(3, mapValueToRange(left.y, TOP_1, BOTTOM_1, 0, 254));
 			}
 			if (!reverse[3]) {
-				channels.put(4, map(left.x, LEFT_1, RIGHT_1, 0, 254));
+				channels.put(4, mapValueToRange(left.x, LEFT_1, RIGHT_1, 0, 254));
 			} else {
-				channels.put(4, map(left.x, RIGHT_1, LEFT_1, 0, 254));
+				channels.put(4, mapValueToRange(left.x, RIGHT_1, LEFT_1, 0, 254));
 			}
 		} else {
 			left = pointers.get(1);
 			right = pointers.get(0);
 			if (!reverse[0]) {
-				channels.put(1, map(right.x, LEFT_1, RIGHT_1, 0, 254));
+				channels.put(1, mapValueToRange(right.x, LEFT_1, RIGHT_1, 0, 254));
 			} else {
-				channels.put(1, map(right.x, RIGHT_1, LEFT_1, 0, 254));
+				channels.put(1, mapValueToRange(right.x, RIGHT_1, LEFT_1, 0, 254));
 			}
 			if (!reverse[1]) {
-				channels.put(2, map(right.y, BOTTOM_1, TOP_1, 0, 254));
+				channels.put(2, mapValueToRange(right.y, BOTTOM_1, TOP_1, 0, 254));
 			} else {
-				channels.put(2, map(right.y, TOP_1, BOTTOM_1, 0, 254));
+				channels.put(2, mapValueToRange(right.y, TOP_1, BOTTOM_1, 0, 254));
 			}
 			if (!reverse[2]) {
-				channels.put(3, map(left.y, BOTTOM_2, TOP_2, 0, 254));
+				channels.put(3, mapValueToRange(left.y, BOTTOM_2, TOP_2, 0, 254));
 			} else {
-				channels.put(3, map(left.y, TOP_2, BOTTOM_2, 0, 254));
+				channels.put(3, mapValueToRange(left.y, TOP_2, BOTTOM_2, 0, 254));
 			}
 			if (!reverse[3]) {
-				channels.put(4, map(left.x, LEFT_2, RIGHT_2, 0, 254));
+				channels.put(4, mapValueToRange(left.x, LEFT_2, RIGHT_2, 0, 254));
 			} else {
-				channels.put(4, map(left.x, RIGHT_2, LEFT_2, 0, 254));
+				channels.put(4, mapValueToRange(left.x, RIGHT_2, LEFT_2, 0, 254));
 			}
 		}
 
