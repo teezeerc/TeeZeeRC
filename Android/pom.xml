@@ -21,7 +21,7 @@
 		<repository>
 			<id>bintray</id>
 			<name>Bintray android dependencies</name>
-			<url>https://dl.bintray.com/tzumbrzycki/generic/</url>
+			<url>https://dl.bintray.com/tzumbrzycki/maven/</url>
 		</repository>
 		<repository>
 			<id>central</id>
