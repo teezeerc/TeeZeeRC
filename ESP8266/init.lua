@@ -1,0 +1,5 @@
+wifi.ap.config({ssid="ESP01",pwd="12345678"})
+wifi.setmode(wifi.SOFTAP)
+s=net.createServer(net.UDP)
+s:on("receive",function(s,c) uart.write(0,c,tonumber("FF",16)) end)
+s:listen(1112)
