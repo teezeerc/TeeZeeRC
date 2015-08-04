@@ -1,3 +1,4 @@
+[![Build Status](https://drone.io/github.com/tzumbrzycki/TeeZeeRC/status.png)](https://drone.io/github.com/tzumbrzycki/TeeZeeRC/latest)
 #Compile Android TX
 To compile you need to install Maven Android SDK Deployer (https://github.com/mosabua/maven-android-sdk-deployer)
 This project uses compatibility-v7-appcompat dependency from Maven Android SDK Deployer
