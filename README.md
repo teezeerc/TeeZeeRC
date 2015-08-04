@@ -1,5 +1,5 @@
 # TeeZeeRC
-Opensource and open-hardware, programmable WiFi RC receiver
+Open source and open hardware, programmable WiFi RC receiver and Android transmitter
 
 #Build statuses
 Android TX:
