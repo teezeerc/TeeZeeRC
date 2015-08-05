@@ -1,0 +1,13 @@
+language: python
+python:
+    - "2.7"
+
+env:
+    - PLATFORMIO_CI_SRC=Arduino/TeeZeeRC_RX_Brain.ino
+    - PLATFORMIO_CI_SRC=Arduino
+
+install:
+    - python -c "$(curl -fsSL https://raw.githubusercontent.com/platformio/platformio/master/scripts/get-platformio.py)"
+
+script:
+    - platformio ci --board=uno --board=due
