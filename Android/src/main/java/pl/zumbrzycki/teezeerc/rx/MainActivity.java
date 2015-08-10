@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import pl.zumbrzycki.teezeerc.rx.MultitouchView.Mode;
 import pl.zumbrzycki.teezeerc.rx.R;
 
 /**
@@ -42,13 +43,13 @@ public class MainActivity extends Activity {
 		switch (item.getItemId()) {
 		case R.id.settings_option_item_mode_1:
 			multitouchView.getTask().cancel(true);
-			multitouchView.setMODE(1);
+			multitouchView.setMODE(Mode.Mode_1);
 			reinitializeView();
 			Log.d("mode type", "1");
 			return true;
 		case R.id.settings_option_item_mode_2:
 			multitouchView.getTask().cancel(true);
-			multitouchView.setMODE(2);
+			multitouchView.setMODE(Mode.Mode_2);
 			reinitializeView();
 			Log.d("mode type", "2");
 			return true;

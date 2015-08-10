@@ -32,6 +32,10 @@ import android.view.View;
  */
 public class MultitouchView extends View {
 
+	enum Mode {
+		Mode_2,Mode_1
+	}
+	
 	// default values for full hd screen size
 	static final int CIRCLE_SIZE = 80;
 	static final int SQUARE_WIDTH = 508;
@@ -45,7 +49,7 @@ public class MultitouchView extends View {
 	static final int RIGHT_2 = 1292 + SQUARE_WIDTH;
 
 	// default mode, throttle on left side
-	private static int MODE = 2;
+	private static Mode SELECTED_MODE = Mode.Mode_2;
 	private boolean reverse[];
 
 	private Map<Integer, PointF> mActivePointers;
@@ -62,29 +66,56 @@ public class MultitouchView extends View {
 		initView();
 	}
 
-	@SuppressWarnings("unchecked")
 	private void initView() {
-		mActivePointers = new HashMap<Integer, PointF>();
-		channelValues = new HashMap<Integer, Integer>();
-		reverse = new boolean[] { false, true, false, true, false, false,
-				false, false };
+		setupEmptyPointersAndChannels();
+		setupReverseForChannels();
+		setupDefaultPaintStyle();//TODO
+		setupRectanglesPaintStyle();
+		setupRectanglesDimensions();
+		setupDefaultSticksPositionsByMode(SELECTED_MODE);
+		mapPointersToChannelsByMode(SELECTED_MODE, mActivePointers, channelValues);
+		runAsyncTask();
+	}
+
+	private void setupDefaultPaintStyle() {
 		mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		mPaint.setColor(Color.BLUE);
 		mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+	}
+
+	private void setupEmptyPointersAndChannels() {
+		mActivePointers = new HashMap<Integer, PointF>();
+		channelValues = new HashMap<Integer, Integer>();
+	}
+
+	private void setupDefaultSticksPositionsByMode(Mode mode) {
+		defaultLeftPoint = getDefaultLeftPointByMode(mode);
+		defaultRightPoint = getDefaultRightPointByMode(mode);
+		mActivePointers.put(0, defaultLeftPoint);
+		mActivePointers.put(1, defaultRightPoint);
+	}
+
+	private void setupReverseForChannels() {
+		reverse = new boolean[] { false, true, false, true, false, false,
+				false, false };
+	}
+
+	private void setupRectanglesDimensions() {
+		rectLeft = new Rect(LEFT_1, TOP_1, RIGHT_1, BOTTOM_1);
+		rectRight = new Rect(LEFT_2, TOP_2, RIGHT_2, BOTTOM_2);
+	}
+
+	private void setupRectanglesPaintStyle() {
 		rectPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		rectPaint.setColor(Color.BLACK);
 		rectPaint.setStrokeWidth(10);
 		rectPaint.setStyle(Paint.Style.STROKE);
-		rectLeft = new Rect(LEFT_1, TOP_1, RIGHT_1, BOTTOM_1);
-		rectRight = new Rect(LEFT_2, TOP_2, RIGHT_2, BOTTOM_2);
-		defaultLeftPoint = getDefaultLeftPointByMode(MODE);
-		defaultRightPoint = getDefaultRightPointByMode(MODE);
-		mActivePointers.put(0, defaultLeftPoint);
-		mActivePointers.put(1, defaultRightPoint);
-		mapPointersToChannelsByMode(MODE, mActivePointers, channelValues);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void runAsyncTask() {
 		task = new SendPacketAsyncTask("192.168.4.1", 1112, getContext());
 		task.execute(channelValues);
-
 	}
 
 	/**
@@ -96,57 +127,94 @@ public class MultitouchView extends View {
 	 * @param channels
 	 *            - stick positions translated to receiver channel values
 	 */
-	private void mapPointersToChannelsByMode(int mode,
+	private void mapPointersToChannelsByMode(Mode mode,
 			Map<Integer, PointF> pointers, Map<Integer, Integer> channels) {
 		PointF left, right;
-		if (mode == 2) {
+		if (mode == Mode.Mode_2) {
 			left = pointers.get(0);
 			right = pointers.get(1);
-			if (!reverse[0]) {
-				channels.put(1, mapValueToRange(right.x, LEFT_2, RIGHT_2, 0, 254));
-			} else {
-				channels.put(1, mapValueToRange(right.x, RIGHT_2, LEFT_2, 0, 254));
-			}
-			if (!reverse[1]) {
-				channels.put(2, mapValueToRange(right.y, BOTTOM_2, TOP_2, 0, 254));
-			} else {
-				channels.put(2, mapValueToRange(right.y, TOP_2, BOTTOM_2, 0, 254));
-			}
-			if (!reverse[2]) {
-				channels.put(3, mapValueToRange(left.y, BOTTOM_1, TOP_1, 0, 254));
-			} else {
-				channels.put(3, mapValueToRange(left.y, TOP_1, BOTTOM_1, 0, 254));
-			}
-			if (!reverse[3]) {
-				channels.put(4, mapValueToRange(left.x, LEFT_1, RIGHT_1, 0, 254));
-			} else {
-				channels.put(4, mapValueToRange(left.x, RIGHT_1, LEFT_1, 0, 254));
-			}
+			mapChannelOneValueForMode2(channels, reverse, right);
+			mapChannelTwoValueForMode2(channels, reverse, right);
+			mapChannelThreeValueForMode2(channels, reverse, left);
+			mapChannelFourValueForMode2(channels, reverse, left);
 		} else {
 			left = pointers.get(1);
 			right = pointers.get(0);
-			if (!reverse[0]) {
-				channels.put(1, mapValueToRange(right.x, LEFT_1, RIGHT_1, 0, 254));
-			} else {
-				channels.put(1, mapValueToRange(right.x, RIGHT_1, LEFT_1, 0, 254));
-			}
-			if (!reverse[1]) {
-				channels.put(2, mapValueToRange(right.y, BOTTOM_1, TOP_1, 0, 254));
-			} else {
-				channels.put(2, mapValueToRange(right.y, TOP_1, BOTTOM_1, 0, 254));
-			}
-			if (!reverse[2]) {
-				channels.put(3, mapValueToRange(left.y, BOTTOM_2, TOP_2, 0, 254));
-			} else {
-				channels.put(3, mapValueToRange(left.y, TOP_2, BOTTOM_2, 0, 254));
-			}
-			if (!reverse[3]) {
-				channels.put(4, mapValueToRange(left.x, LEFT_2, RIGHT_2, 0, 254));
-			} else {
-				channels.put(4, mapValueToRange(left.x, RIGHT_2, LEFT_2, 0, 254));
-			}
+			mapChannelOneValueForMode1(channels, reverse, right);
+			mapChannelTwoValueForMode1(channels, reverse, right);
+			mapChannelThreeValueForMode1(channels, reverse, left);
+			mapChannelFourValueForMode1(channels, reverse, left);
 		}
 
+	}
+
+	private void mapChannelFourValueForMode1(Map<Integer, Integer> channels, boolean[] reverse, 
+			PointF left) {
+		if (!reverse[3]) {
+			channels.put(4, mapValueToRange(left.x, LEFT_2, RIGHT_2, 0, 254));
+		} else {
+			channels.put(4, mapValueToRange(left.x, RIGHT_2, LEFT_2, 0, 254));
+		}
+	}
+
+	private void mapChannelThreeValueForMode1(Map<Integer, Integer> channels,boolean[] reverse,
+			PointF left) {
+		if (!reverse[2]) {
+			channels.put(3, mapValueToRange(left.y, BOTTOM_2, TOP_2, 0, 254));
+		} else {
+			channels.put(3, mapValueToRange(left.y, TOP_2, BOTTOM_2, 0, 254));
+		}
+	}
+
+	private void mapChannelTwoValueForMode1(Map<Integer, Integer> channels,boolean[] reverse,
+			PointF right) {
+		if (!reverse[1]) {
+			channels.put(2, mapValueToRange(right.y, BOTTOM_1, TOP_1, 0, 254));
+		} else {
+			channels.put(2, mapValueToRange(right.y, TOP_1, BOTTOM_1, 0, 254));
+		}
+	}
+
+	private void mapChannelOneValueForMode1(Map<Integer, Integer> channels,boolean[] reverse,
+			PointF right) {
+		if (!reverse[0]) {
+			channels.put(1, mapValueToRange(right.x, LEFT_1, RIGHT_1, 0, 254));
+		} else {
+			channels.put(1, mapValueToRange(right.x, RIGHT_1, LEFT_1, 0, 254));
+		}
+	}
+
+	private void mapChannelFourValueForMode2(Map<Integer, Integer> channels, boolean[] reverse, PointF left) {
+		if (!reverse[3]) {
+			channels.put(4, mapValueToRange(left.x, LEFT_1, RIGHT_1, 0, 254));
+		} else {
+			channels.put(4, mapValueToRange(left.x, RIGHT_1, LEFT_1, 0, 254));
+		}
+	}
+
+	private void mapChannelThreeValueForMode2(Map<Integer, Integer> channels, boolean[] reverse,
+			PointF left) {
+		if (!reverse[2]) {
+			channels.put(3, mapValueToRange(left.y, BOTTOM_1, TOP_1, 0, 254));
+		} else {
+			channels.put(3, mapValueToRange(left.y, TOP_1, BOTTOM_1, 0, 254));
+		}
+	}
+
+	private void mapChannelTwoValueForMode2(Map<Integer, Integer> channels, boolean[] reverse, PointF right) {
+		if (!reverse[1]) {
+			channels.put(2, mapValueToRange(right.y, BOTTOM_2, TOP_2, 0, 254));
+		} else {
+			channels.put(2, mapValueToRange(right.y, TOP_2, BOTTOM_2, 0, 254));
+		}
+	}
+
+	private void mapChannelOneValueForMode2(Map<Integer, Integer> channels, boolean[] reverse, PointF right) {
+		if (!reverse[0]) {
+			channels.put(1, mapValueToRange(right.x, LEFT_2, RIGHT_2, 0, 254));
+		} else {
+			channels.put(1, mapValueToRange(right.x, RIGHT_2, LEFT_2, 0, 254));
+		}
 	}
 
 	@SuppressLint("ClickableViewAccessibility")
@@ -168,7 +236,7 @@ public class MultitouchView extends View {
 			if (isPointInRectangle(f, rectRight)) {
 				mActivePointers.put(1, f);
 			}
-			mapPointersToChannelsByMode(MODE, mActivePointers, channelValues);
+			mapPointersToChannelsByMode(SELECTED_MODE, mActivePointers, channelValues);
 			break;
 		}
 		case MotionEvent.ACTION_MOVE: {
@@ -183,7 +251,7 @@ public class MultitouchView extends View {
 					mActivePointers.put(1, newPoint);
 				}
 			}
-			mapPointersToChannelsByMode(MODE, mActivePointers, channelValues);
+			mapPointersToChannelsByMode(SELECTED_MODE, mActivePointers, channelValues);
 			break;
 		}
 		case MotionEvent.ACTION_UP:
@@ -194,7 +262,7 @@ public class MultitouchView extends View {
 			f.y = event.getY(pointerIndex);
 			if (isPointInRectangle(f, rectLeft)) {
 				mActivePointers.remove(0);
-				if (MODE == 2) {
+				if (SELECTED_MODE == Mode.Mode_2) {
 					mActivePointers.put(0, new PointF(defaultLeftPoint.x, f.y));
 				} else {
 					mActivePointers.put(0, defaultLeftPoint);
@@ -202,14 +270,14 @@ public class MultitouchView extends View {
 			}
 			if (isPointInRectangle(f, rectRight)) {
 				mActivePointers.remove(1);
-				if (MODE == 2) {
+				if (SELECTED_MODE == Mode.Mode_2) {
 					mActivePointers.put(1, defaultRightPoint);
 				} else {
 					mActivePointers
 							.put(1, new PointF(defaultRightPoint.x, f.y));
 				}
 			}
-			mapPointersToChannelsByMode(MODE, mActivePointers, channelValues);
+			mapPointersToChannelsByMode(SELECTED_MODE, mActivePointers, channelValues);
 			break;
 		}
 		}
@@ -225,16 +293,15 @@ public class MultitouchView extends View {
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
 		Iterator it = mActivePointers.entrySet().iterator();
-		PointF point = null;
 		while (it.hasNext()) {
 			Map.Entry pair = (Map.Entry) it.next();
-			point = (PointF) pair.getValue();
+			PointF point = (PointF) pair.getValue();
 			if (point != null) {
 				if (isPointInRectangle(point, rectLeft)) {
-					mPaint.setColor(getLeftColorByMode(MODE));
+					mPaint.setColor(getLeftColorByMode(SELECTED_MODE));
 				}
 				if (isPointInRectangle(point, rectRight)) {
-					mPaint.setColor(getRightColorByMode(MODE));
+					mPaint.setColor(getRightColorByMode(SELECTED_MODE));
 				}
 				canvas.drawCircle(point.x, point.y, CIRCLE_SIZE, mPaint);
 			}
@@ -251,12 +318,12 @@ public class MultitouchView extends View {
 		this.task = task;
 	}
 
-	public int getMODE() {
-		return MODE;
+	public Mode getMODE() {
+		return SELECTED_MODE;
 	}
 
-	public void setMODE(int mode) {
-		MODE = mode;
+	public void setMODE(Mode mode) {
+		SELECTED_MODE = mode;
 	}
 
 }

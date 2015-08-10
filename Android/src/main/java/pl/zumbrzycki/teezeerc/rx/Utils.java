@@ -6,6 +6,8 @@ package pl.zumbrzycki.teezeerc.rx;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
+import pl.zumbrzycki.teezeerc.rx.MultitouchView.Mode;
+
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -28,16 +30,16 @@ public class Utils {
 						&& point.y >= rect.top && point.y <= rect.bottom));
 	}
 
-	public static int getLeftColorByMode(int mode) {
-		if (mode == 1) {
+	public static int getLeftColorByMode(Mode mode) {
+		if (mode == Mode.Mode_1) {
 			return Color.GREEN;
 		} else {
 			return Color.RED;
 		}
 	}
 
-	public static int getRightColorByMode(int mode) {
-		if (mode == 1) {
+	public static int getRightColorByMode(Mode mode) {
+		if (mode == Mode.Mode_1) {
 			return Color.RED;
 		} else {
 			return Color.GREEN;
@@ -45,8 +47,8 @@ public class Utils {
 
 	}
 
-	public static PointF getDefaultLeftPointByMode(int mode) {
-		if (mode == 1) {
+	public static PointF getDefaultLeftPointByMode(Mode mode) {
+		if (mode == Mode.Mode_1) {
 			return new PointF(MultitouchView.LEFT_1
 					+ MultitouchView.SQUARE_WIDTH / 2, MultitouchView.TOP_1
 					+ MultitouchView.SQUARE_WIDTH / 2);
@@ -56,8 +58,8 @@ public class Utils {
 		}
 	}
 
-	public static PointF getDefaultRightPointByMode(int mode) {
-		if (mode == 1) {
+	public static PointF getDefaultRightPointByMode(Mode mode) {
+		if (mode == Mode.Mode_1) {
 			return new PointF(MultitouchView.LEFT_2
 					+ MultitouchView.SQUARE_WIDTH / 2, MultitouchView.BOTTOM_2);
 		} else {
