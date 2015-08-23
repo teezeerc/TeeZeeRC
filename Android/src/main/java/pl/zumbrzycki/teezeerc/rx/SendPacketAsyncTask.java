@@ -122,7 +122,7 @@ public class SendPacketAsyncTask extends
 	}
 
 	private boolean isWiFiConnected(NetworkInfo Info) {
-		return !(Info == null || !Info.isConnectedOrConnecting());
+		return !(Info == null || Info.isConnectedOrConnecting());
 	}
 
 	private void vibrateIfLowSignalLevel(int wifiLevel) {

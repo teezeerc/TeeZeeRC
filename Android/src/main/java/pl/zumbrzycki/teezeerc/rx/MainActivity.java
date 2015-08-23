@@ -3,15 +3,14 @@
  */
 package pl.zumbrzycki.teezeerc.rx;
 
+import pl.zumbrzycki.teezeerc.rx.MultitouchView.Mode;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.widget.TextView;
-
-import pl.zumbrzycki.teezeerc.rx.MultitouchView.Mode;
-import pl.zumbrzycki.teezeerc.rx.R;
 
 /**
  * @author Tomasz Zumbrzycki Android Activity class responsible for
@@ -79,4 +78,10 @@ public class MainActivity extends Activity {
 		finish();
 	}
 
+	@Override
+	public boolean onGenericMotionEvent(MotionEvent event) {
+		Log.d("stick", "activity:" + event.getSource());
+		return multitouchView.onGenericMotionEvent(event)
+				|| super.onGenericMotionEvent(event);
+	}
 }
